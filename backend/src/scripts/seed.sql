@@ -1,0 +1,54 @@
+-- Customers
+INSERT INTO Customer (Email, FullName, PasswordHash) VALUES
+('emma.jones@example.com', 'Emma Jones', 'hash123'),
+('michael.smith@example.com', 'Michael Smith', 'hash456'),
+('sophia.wilson@example.com', 'Sophia Wilson', 'hash789');
+
+-- Products
+INSERT INTO Product (Name, Description, UnitPrice, StockQty) VALUES
+('Wireless Mouse', '2.4GHz ergonomic mouse with USB receiver', 24.99, 100),
+('Mechanical Keyboard', 'RGB backlit mechanical keyboard', 79.99, 50),
+('Laptop Stand', 'Adjustable aluminum laptop stand', 39.99, 80),
+('Noise Cancelling Headphones', 'Bluetooth over-ear headphones', 149.99, 30),
+('Smartwatch', 'Fitness tracker with heart rate monitor', 199.99, 20),
+('USB-C Hub', '7-in-1 adapter with HDMI and card reader', 34.99, 200),
+('Portable SSD 1TB', 'USB 3.2 Gen 2 high-speed storage drive', 129.99, 40);
+
+-- Carts
+INSERT INTO Cart (CustomerID, Status, Total) VALUES
+(1, 'Active', 104.98),
+(2, 'Active', 149.99),
+(3, 'Active', 39.99);
+
+-- Cart Items
+INSERT INTO CartItem (CartID, ProductID, Quantity) VALUES
+(1, 1, 2),     -- 2x Wireless Mouse
+(2, 4, 1),     -- 1x Headphones
+(3, 3, 1);     -- 1x Laptop Stand
+
+-- Orders
+INSERT INTO "Order" (CustomerID, Status, TotalAmount, ShippingAddress) VALUES
+(1, 'Shipped', 189.97, '123 King Street, Windsor, ON'),
+(2, 'Pending', 149.99, '88 Queen Street, Toronto, ON'),
+(3, 'Processing', 169.98, '45 River Road, London, ON');
+
+-- Order Items
+INSERT INTO OrderItem (OrderID, ProductID, Quantity, UnitPriceAtOrder) VALUES
+(1, 2, 1, 79.99),
+(1, 3, 1, 39.99),
+(1, 1, 3, 24.99),
+(2, 4, 1, 149.99),
+(3, 5, 1, 199.99);
+
+-- Payments
+INSERT INTO Payment (OrderID, Amount, Status) VALUES
+(1, 189.97, 'Completed'),
+(2, 149.99, 'Pending'),
+(3, 199.99, 'Pending');
+
+-- Audit Logs
+INSERT INTO AuditLog (EntityType, Action)
+VALUES
+('System', 'Initial database seed completed'),
+('Product', 'Inserted base product dataset'),
+('Customer', 'Inserted 3 initial customers');
