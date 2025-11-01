@@ -1,4 +1,4 @@
-- Product Queries
+-- Product Queries
 SELECT * FROM Product WHERE Name LIKE '%Mouse%';
 SELECT * FROM Product WHERE UnitPrice BETWEEN 20 AND 100;
 SELECT * FROM Product WHERE StockQty > 0 ORDER BY Name;
