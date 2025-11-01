@@ -1,7 +1,3 @@
--- Step 4 – Implementation
--- Contributors | Emad Elmontaser
--- Products Module + Security Lead
-
 -- Product Queries
 SELECT * FROM Product ORDER BY ProductID;
 SELECT * FROM Product WHERE Name ILIKE '%mouse%';
