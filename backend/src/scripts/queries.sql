@@ -1,5 +1,4 @@
 -- Product Queries
-SELECT * FROM Product ORDER BY ProductID;
 SELECT * FROM Product WHERE Name ILIKE '%mouse%';
 SELECT * FROM Product WHERE UnitPrice BETWEEN 20 AND 100;
 SELECT * FROM Product WHERE StockQty > 0 ORDER BY Name;
@@ -48,7 +47,9 @@ CREATE OR REPLACE FUNCTION LogProductUpdate()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO AuditLog(EntityType, Action)
-  VALUES ('Product', CONCAT('Product ID ', NEW.ProductID, ' updated: Stock = ', NEW.StockQty, ', Price = ', NEW.UnitPrice));
+  VALUES ('Product', CONCAT('Product ID ', NEW.ProductID,
+                            ' updated: Stock = ', NEW.StockQty,
+                            ', Price = ', NEW.UnitPrice));
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -59,6 +60,5 @@ FOR EACH ROW
 EXECUTE FUNCTION LogProductUpdate();
 
 -- Test Queries
-CALL DecrementStock(1, 2);
-SELECT * FROM Product WHERE ProductID = 1;
+SELECT DecrementStock(1, 2);
 SELECT * FROM AuditLog ORDER BY Timestamp DESC;
