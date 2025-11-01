@@ -5,14 +5,14 @@ INSERT INTO Customer (Email, FullName, PasswordHash) VALUES
 ('sophia.wilson@example.com', 'Sophia Wilson', 'hash789');
 
 -- Products
-INSERT INTO Product (Name, Description, UnitPrice, StockQty) VALUES
-('Wireless Mouse', '2.4GHz ergonomic mouse with USB receiver', 24.99, 100),
-('Mechanical Keyboard', 'RGB backlit mechanical keyboard', 79.99, 50),
-('Laptop Stand', 'Adjustable aluminum laptop stand', 39.99, 80),
-('Noise Cancelling Headphones', 'Bluetooth over-ear headphones', 149.99, 30),
-('Smartwatch', 'Fitness tracker with heart rate monitor', 199.99, 20),
-('USB-C Hub', '7-in-1 adapter with HDMI and card reader', 34.99, 200),
-('Portable SSD 1TB', 'USB 3.2 Gen 2 high-speed storage drive', 129.99, 40);
+INSERT INTO Product (Name, UnitPrice, StockQty) VALUES
+('Wireless Mouse', 24.99, 100),
+('Mechanical Keyboard', 79.99, 50),
+('Laptop Stand', 39.99, 80),
+('Noise Cancelling Headphones', 149.99, 30),
+('Smartwatch', 199.99, 20),
+('USB-C Hub', 34.99, 200),
+('Portable SSD 1TB', 129.99, 40);
 
 -- Carts
 INSERT INTO Cart (CustomerID, Status, Total) VALUES
