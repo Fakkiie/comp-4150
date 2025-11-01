@@ -14,19 +14,6 @@ JOIN OrderItem oi ON o.OrderID = oi.OrderID
 JOIN Product p ON oi.ProductID = p.ProductID
 ORDER BY o.OrderID;
 
--- Function to reduce product stock
-CREATE OR REPLACE FUNCTION DecrementStock(p_ProductID INT, p_Qty INT)
-RETURNS VOID AS $$
-BEGIN
-  UPDATE Product
-  SET StockQty = StockQty - p_Qty
-  WHERE ProductID = p_ProductID;
-
-  INSERT INTO AuditLog(EntityType, Action)
-  VALUES ('Product', 'Reduced stock for Product ' || p_ProductID || ' by ' || p_Qty);
-END;
-$$ LANGUAGE plpgsql;
-
 -- Trigger to prevent negative stock
 CREATE OR REPLACE FUNCTION CheckStock()
 RETURNS TRIGGER AS $$
@@ -38,27 +25,31 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- This line "cleans up" the old trigger before creating the new one.
+DROP TRIGGER IF EXISTS check_stock_trigger ON Product;
+
 CREATE TRIGGER check_stock_trigger
 BEFORE UPDATE ON Product
 FOR EACH ROW
 EXECUTE FUNCTION CheckStock();
 
--- Trigger to log product updates
-CREATE OR REPLACE FUNCTION LogProductUpdate()
-RETURNS TRIGGER AS $$
+-- changes were needed due to new auditLog table
+CREATE OR REPLACE FUNCTION DecrementStock(p_ProductID INT, p_Qty INT)
+RETURNS VOID AS $$
 BEGIN
-  INSERT INTO AuditLog(EntityType, Action)
-  VALUES ('Product', 'Product ' || NEW.ProductID ||
-          ' updated. New stock: ' || NEW.StockQty ||
-          ', New price: ' || NEW.UnitPrice);
-  RETURN NEW;
+
+  UPDATE Product
+  SET StockQty = StockQty - p_Qty
+  WHERE ProductID = p_ProductID;
+
+  INSERT INTO AuditLog(actionDesc, EntityType, EntityID)
+  VALUES (
+    'Stock reduced by ' || p_Qty,
+    'Product',
+    p_ProductID
+  );
 END;
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER product_update_trigger
-AFTER UPDATE ON Product
-FOR EACH ROW
-EXECUTE FUNCTION LogProductUpdate();
 
 -- Testing section
 SELECT DecrementStock(1, 2);

@@ -28,9 +28,9 @@ INSERT INTO CartItem (CartID, ProductID, Quantity) VALUES
 
 -- Orders
 INSERT INTO "Order" (CustomerID, Status, TotalAmount, ShippingAddress) VALUES
-(1, 'Shipped', 189.97, '123 King Street, Windsor, ON'),
+(1, 'Shipped', 194.95, '123 King Street, Windsor, ON'),
 (2, 'Pending', 149.99, '88 Queen Street, Toronto, ON'),
-(3, 'Processing', 169.98, '45 River Road, London, ON');
+(3, 'Processing', 199.99, '45 River Road, London, ON');
 
 -- Order Items
 INSERT INTO OrderItem (OrderID, ProductID, Quantity, UnitPriceAtOrder) VALUES
@@ -42,13 +42,13 @@ INSERT INTO OrderItem (OrderID, ProductID, Quantity, UnitPriceAtOrder) VALUES
 
 -- Payments
 INSERT INTO Payment (OrderID, Amount, Status) VALUES
-(1, 189.97, 'Completed'),
+(1, 194.95, 'Succeeded'),
 (2, 149.99, 'Pending'),
-(3, 199.99, 'Pending');
+(3, 199.99, 'Failed');
 
 -- Audit Logs
-INSERT INTO AuditLog (EntityType, Action)
+INSERT INTO AuditLog ( ActionDesc, EntityType, EntityID)
 VALUES
-('System', 'Initial database seed completed'),
-('Product', 'Inserted base product dataset'),
-('Customer', 'Inserted 3 initial customers');
+('Initial database seed completed', 'System', 0),
+('Inserted base product dataset', 'Product', 0),
+('Inserted 3 initial customers', 'Customer', 0);
