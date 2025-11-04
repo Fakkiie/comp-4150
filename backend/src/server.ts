@@ -1,10 +1,20 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import health from './routes/health';
 
 const app = express();
+
+// CORS first
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true, 
+}));
+
 app.use(express.json());
-app.use('/health', health);
+
+// your routes
+app.use('/api/health', health);
 
 // minimal error handler
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
