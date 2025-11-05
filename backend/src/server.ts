@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import health from './routes/health';
+import orderRoutes from './routes/orders';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // your routes
 app.use('/api/health', health);
+app.use('/api/orders', orderRoutes); 
 
 // minimal error handler
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
