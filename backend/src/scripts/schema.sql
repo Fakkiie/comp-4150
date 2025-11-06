@@ -19,6 +19,10 @@ CREATE TABLE Cart (
   Total DECIMAL(10,2)
 );
 
+-- Added this to ensure only valid cart states can be inserted
+ALTER TABLE Cart
+ADD CONSTRAINT chk_cart_status CHECK (Status IN ('Active', 'Completed'));
+
 CREATE TABLE CartItem (
   CartID INT REFERENCES Cart(CartID) ON DELETE CASCADE,
   ProductID INT REFERENCES Product(ProductID) ON DELETE CASCADE,
