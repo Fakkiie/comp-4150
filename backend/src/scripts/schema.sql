@@ -57,6 +57,10 @@ CREATE TABLE Payment (
   CreatedAt TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Prevents multiple payments with the same status
+ALTER TABLE Payment
+ADD CONSTRAINT unique_active_payment UNIQUE (OrderID, Status);
+
 CREATE TABLE AuditLog (
   LogID SERIAL PRIMARY KEY,
   actionDesc VARCHAR(100) NOT NULL, 
