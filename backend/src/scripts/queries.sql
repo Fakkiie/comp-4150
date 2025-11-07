@@ -248,3 +248,42 @@ SELECT CancelOrder(2);
 SELECT * FROM "Order" WHERE OrderID = 2; -- Check status is 'Cancelled'
 SELECT * FROM Product WHERE ProductID = 4; -- Check stock for Headphones
 SELECT * FROM AuditLog ORDER BY Timestamp DESC;
+
+-- Customer Queries
+
+-- View all customers
+SELECT * FROM Customer;
+
+-- Find a customer by email
+SELECT * FROM Customer WHERE Email = 'emma.jones@example.com';
+
+-- Update customer name
+UPDATE Customer
+SET FullName = 'Emma J. Jones'
+WHERE CustomerID = 1;
+
+-- Update customer password
+UPDATE Customer
+SET PasswordHash = 'newsecurehash123'
+WHERE Email = 'michael.smith@example.com';
+
+-- Function: update customer email
+CREATE OR REPLACE FUNCTION UpdateCustomerEmail(
+  p_CustomerID INT,
+  p_NewEmail VARCHAR
+)
+RETURNS VOID AS $$
+BEGIN
+  UPDATE Customer
+  SET Email = p_NewEmail
+  WHERE CustomerID = p_CustomerID;
+
+  INSERT INTO AuditLog(actionDesc, EntityType, EntityID)
+  VALUES ('Customer email updated', 'Customer', p_CustomerID);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Test section
+SELECT UpdateCustomerEmail(2, 'mike.smith@example.com');
+SELECT * FROM Customer;
+SELECT * FROM AuditLog WHERE EntityType = 'Customer' ORDER BY Timestamp DESC;
