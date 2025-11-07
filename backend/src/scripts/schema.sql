@@ -68,3 +68,9 @@ CREATE TABLE AuditLog (
   EntityID INT NOT NULL,
   Timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Ensures no log can reference a non-existent customer or order
+ALTER TABLE AuditLog
+ADD COLUMN UserID INT REFERENCES Customer(CustomerID),
+ADD COLUMN OrderID INT REFERENCES "Order"(OrderID);
+
