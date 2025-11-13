@@ -9,14 +9,9 @@ export default function ProductsPage() {
 
   // Load products from backend
   const loadProducts = async () => {
-    try {
-      const res = await fetch("http://localhost:4000/api/products");
-      const data = await res.json();
-      setProducts(data);
-    } catch (err) {
-      console.error("Error loading products:", err);
-      alert("Failed to load products");
-    }
+    const res = await fetch("http://localhost:4000/api/products");
+    const data = await res.json();
+    setProducts(data);
   };
 
   useEffect(() => {
@@ -30,7 +25,7 @@ export default function ProductsPage() {
       method: "DELETE",
     });
     if (res.ok) {
-      alert("🗑️ Product deleted");
+      alert("Product deleted");
       loadProducts();
     } else alert("Delete failed");
   };
@@ -57,76 +52,66 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-5xl mx-auto">
-        <h1 className="text-3xl font-semibold mb-8 text-gray-800">
-          Product Management
-        </h1>
+  <div className="p-6">
+    <h1 className="text-2xl font-bold mb-6">Product Management</h1>
 
-        {products.length === 0 ? (
-          <p className="text-gray-500 text-center mt-20">No products found.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((p) => (
-              <div
-                key={p.id}
-                className="border bg-white rounded-xl p-5 shadow-sm hover:shadow-md transition"
-              >
-                {editingId === p.id ? (
-                  <div className="flex flex-col gap-3">
-                    <input
-                      className="border p-2 rounded"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                    />
-                    <input
-                      className="border p-2 rounded"
-                      type="number"
-                      value={editPrice}
-                      onChange={(e) => setEditPrice(e.target.value)}
-                    />
-                    <div className="flex justify-between">
-                      <button
-                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                        onClick={() => handleSave(p.id)}
-                      >
-                        Save
-                      </button>
-                      <button
-                        className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
-                        onClick={() => setEditingId(null)}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-800 mb-1">
-                      {p.name}
-                    </h2>
-                    <p className="text-gray-600 mb-4">${p.price}</p>
-                    <div className="flex justify-between">
-                      <button
-                        className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
-                        onClick={() => handleEdit(p)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                        onClick={() => handleDelete(p.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                )}
+    {products.length === 0 ? (
+      <p>No products found.</p>
+    ) : (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((p) => (
+          <div key={p.id} className="border p-4 rounded">
+            {editingId === p.id ? (
+              <div>
+                <input
+                  className="border p-1 mb-2 w-full"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                />
+                <input
+                  className="border p-1 mb-2 w-full"
+                  type="number"
+                  value={editPrice}
+                  onChange={(e) => setEditPrice(e.target.value)}
+                />
+                <div className="flex gap-2">
+                  <button
+                    className="bg-green-500 text-white px-2 py-1 rounded"
+                    onClick={() => handleSave(p.id)}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="bg-gray-400 text-white px-2 py-1 rounded"
+                    onClick={() => setEditingId(null)}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
-            ))}
+            ) : (
+              <div>
+                <h2 className="font-semibold">{p.name}</h2>
+                <p>${p.price}</p>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    className="bg-yellow-500 text-white px-2 py-1 rounded"
+                    onClick={() => handleEdit(p)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-2 py-1 rounded"
+                    onClick={() => handleDelete(p.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        )}
+        ))}
       </div>
-    </div>
-  );
-}
+    )}
+  </div>
+);
