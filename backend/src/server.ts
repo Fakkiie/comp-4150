@@ -7,7 +7,7 @@ import products from './routes/products';
 import orders from './routes/orders';
 import payments from './routes/payments';
 import customers from './routes/customers';
-
+import auth from './routes/auth';
 const app = express();
 
 // allow requests from frontend
@@ -19,11 +19,13 @@ app.use(cors({
 app.use(express.json());
 
 // mount all the route handlers
-app.use('/api', health);
+app.use('/api/health', health);
 app.use('/api/products', products);
 app.use('/api/orders', orders);
 app.use('/api/payments', payments);
 app.use('/api/customers', customers);
+app.use('/api/auth', auth);
+
 
 // catch any errors
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
