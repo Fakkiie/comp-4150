@@ -1,48 +1,74 @@
 "use client";
+
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+type Customer = {
+  customerid: number;
+  email: string;
+  fullname?: string;
+};
 
 export default function Home() {
-  const [status, setStatus] = useState<null | string>(null);
+  const router = useRouter();
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    const api = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api").replace(/\/$/, "");
-    const url = `${api}/health`;
+    try {
+      const raw = typeof window !== "undefined"
+        ? localStorage.getItem("customer")
+        : null;
 
-    (async () => {
-      setStatus("Checking…");
-      try {
-        const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
-        if (!res.ok) {
-          setStatus(`HTTP error ${res.status} ${res.statusText}`);
-          return;
-        }
-        const json = await res.json();
-        setStatus(`Reachable ${JSON.stringify(json)}`);
-      } catch (e: any) {
-        try {
-          const probe = await fetch(url, { mode: "no-cors" });
-          if (probe && probe.type === "opaque") {
-            setStatus("CORS blocked (server reachable, browser blocked)");
-            return;
-          }
-          setStatus(`Fetch failed: ${e?.message || String(e)}`);
-        } catch {
-          setStatus("Network error (server not reachable from browser)");
-        }
+      if (!raw) {
+        router.replace("/login");
+        return;
       }
-    })();
-  }, []);
+
+      const parsed = JSON.parse(raw) as Customer;
+      setCustomer(parsed);
+      setChecking(false);
+    } catch {
+      router.replace("/login");
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem("customer");
+    } catch {
+      // ignore
+    }
+    router.replace("/login");
+  };
+
+  if (checking) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-600 text-sm">Checking session…</p>
+      </main>
+    );
+  }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100 p-6">
+    <main className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
       <div className="w-full max-w-xl bg-white rounded-2xl shadow p-6 space-y-4">
-        <h1 className="text-2xl font-bold">Frontend ✓</h1>
-        <p className="text-sm text-slate-600">
-          Backend URL: {process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api"}
-        </p>
-        <pre className="text-xs text-black bg-slate-50 p-3 rounded border overflow-auto">
-          {status ?? "Checking /api/health..."}
-        </pre>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold">
+              Hello, {customer?.fullname || customer?.email}
+            </h1>
+            <p className="text-sm text-slate-500">
+              Welcome to the Bookstore Admin Dashboard.
+            </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="text-xs font-medium text-red-600 border border-red-200 rounded-full px-3 py-1 hover:bg-red-50"
+          >
+            Log out
+          </button>
+        </div>
       </div>
     </main>
   );
