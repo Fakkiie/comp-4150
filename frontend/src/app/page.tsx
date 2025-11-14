@@ -79,7 +79,7 @@ export default function Home() {
               Hello, {customer?.fullname || customer?.email}
             </h1>
             <p className="text-sm md:text-base text-slate-500 mt-1">
-              Welcome to the Bookstore Admin Dashboard.
+              Welcome to the Bookstore
             </p>
           </div>
           <button
@@ -104,9 +104,8 @@ export default function Home() {
             </p>
 
             <ul className="text-sm text-slate-600 space-y-1">
-              <li>• Browse and manage all books in the store</li>
-              <li>• View and edit customer details</li>
-              <li>• Keep our online bookstore running smoothly</li>
+              <li>• Browse all books in the store</li>
+              <li>• View and edit your cart</li>
             </ul>
 
             <div className="flex flex-wrap gap-3 pt-2">
