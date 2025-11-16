@@ -29,7 +29,7 @@ export default function StorePage() {
   );
 
   useEffect(() => {
-    // 1. Auth Check
+    // Auth Check
     let rawCustomer: string | null = null;
     try {
       rawCustomer = localStorage.getItem("customer");
@@ -46,7 +46,7 @@ export default function StorePage() {
     const parsedCustomer = JSON.parse(rawCustomer) as Customer;
     setCustomer(parsedCustomer);
 
-    // 2. Load Products & Cart Count
+    // Load Products & Cart Count
     const fetchData = async () => {
         // Fetch Products
         try {
@@ -79,11 +79,11 @@ export default function StorePage() {
   const handleAddToCart = async (productId: number) => {
     if (!customer) return;
 
-    // 1. Optimistic Update (Update UI immediately)
+    // Update UI immediately
     setCartCount(prev => prev + 1);
 
     try {
-      // 2. Call Backend
+      // Call Backend
       const res = await fetch(`${API_BASE}/cart/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
