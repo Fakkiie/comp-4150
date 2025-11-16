@@ -3,6 +3,26 @@ import { q } from "../db";
 
 const r = Router();
 
+// Get all orders for a specific customer 
+r.get("/customer/:customerId", async (req, res) => {
+  const { customerId } = req.params;
+
+  try {
+    // Note: Order is reserved word in SQL. "" allows us to use it
+    const { rows } = await q(
+      `SELECT orderid, orderdate, status, totalamount, shippingaddress 
+       FROM "Order" 
+       WHERE customerid = $1 
+       ORDER BY orderdate DESC`,
+      [customerId]
+    );
+    res.json(rows);
+  } catch (err: any) {
+    console.error("Error fetching customer orders:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // get all order items with product details
 r.get("/items", async (_req, res) => {
   const sql = `
