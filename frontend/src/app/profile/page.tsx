@@ -39,9 +39,10 @@ export default function ProfilePage() {
   const [orders, setOrders] = useState<Order[]>([]);
 
   // 🔹 New toggle states
-  const [showProfileDetails, setShowProfileDetails] = useState(true);
-  const [showCart, setShowCart] = useState(true);
-  const [showOrders, setShowOrders] = useState(true);
+  // const [showProfileDetails, setShowProfileDetails] = useState(true);
+  // const [showCart, setShowCart] = useState(true);
+  // const [showOrders, setShowOrders] = useState(true);
+  const [activeSection, setActiveSection] = useState("personal");
 
   const API_BASE =
     (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api").replace(
@@ -112,172 +113,172 @@ export default function ProfilePage() {
             Back to Home
           </button>
         </header>
-
-        {/* Profile Details */}
-        <section className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-800">
-                Profile Details
-              </h2>
+        <div className="flex gap-6">
+          {/* Left Sidebar */}
+          <aside className="w-64 bg-white rounded-lg shadow p-4">
+            <div className="border-b pb-4 mb-4">
+              <p className="text-lg font-semibold text-slate-800">{customer.fullname || "User"}</p>
+              <p className="text-sm text-slate-500">{customer.email}</p>
             </div>
+            <nav className="space-y-2">
+              <button
+                onClick={() => setActiveSection("personal")}
+                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                  activeSection === "personal"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                👤 Personal Info
+              </button>
 
-            <button
-              onClick={() => setShowProfileDetails(!showProfileDetails)}
-              className="text-xs px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700"
-            >
-              {showProfileDetails ? "Hide" : "Show"}
-            </button>
-          </div>
+              <button
+                onClick={() => setActiveSection("orders")}
+                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                  activeSection === "orders"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                📦 Order History
+              </button>
 
-          {showProfileDetails && (
-            <div className="border-t border-slate-200 pt-4 mt-4">
-              <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
-                <div>
-                  <dt className="text-sm font-medium text-slate-500">
-                    Full name
-                  </dt>
-                  <dd className="mt-1 text-sm text-slate-900">
-                    {customer.fullname || "Not provided"}
-                  </dd>
-                </div>
+              <button
+                onClick={() => setActiveSection("cart")}
+                className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
+                  activeSection === "cart"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                🛒 Cart
+              </button>
+            </nav>
+          </aside>
 
-                <div>
-                  <dt className="text-sm font-medium text-slate-500">
-                    Email address
-                  </dt>
-                  <dd className="mt-1 text-sm text-slate-900">
-                    {customer.email}
-                  </dd>
-                </div>
+          {/* Right Content */}
+          <section className="flex-1 bg-white rounded-lg shadow p-6 text-black font-normal">
+            {activeSection === "personal" && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Personal Info</h2>
+                <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-sm font-medium text-slate-500">
+                      Full name
+                    </dt>
+                    <dd className="mt-1 text-sm text-slate-900">
+                      {customer.fullname || "Not provided"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-slate-500">
+                      Email address
+                    </dt>
+                    <dd className="mt-1 text-sm text-slate-900">
+                      {customer.email}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-sm font-medium text-slate-500">
+                      Customer ID
+                    </dt>
+                    <dd className="mt-1 text-sm text-slate-900">
+                      {customer.customerid}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            )}
 
-                <div>
-                  <dt className="text-sm font-medium text-slate-500">
-                    Customer ID
-                  </dt>
-                  <dd className="mt-1 text-sm text-slate-900">
-                    {customer.customerid}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          )}
-        </section>
-
-        {/* Active Cart */}
-        <section className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-800">Active Cart</h2>
-
-            <button
-              onClick={() => setShowCart(!showCart)}
-              className="text-xs px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700"
-            >
-              {showCart ? "Hide" : "Show"}
-            </button>
-          </div>
-
-          {showCart && (
-            <>
-              {cart.length > 0 ? (
-                <ul className="divide-y divide-slate-200">
-                  {cart.map((item) => (
-                    <li
-                      key={item.productId}
-                      className="py-3 flex justify-between items-center"
-                    >
-                      <div>
-                        <p className="font-medium text-slate-900">{item.name}</p>
-                        <p className="text-sm text-slate-500">
-                          {item.quantity} x ${Number(item.price).toFixed(2)}
-                        </p>
-                      </div>
-                      <p className="text-sm font-medium text-slate-900">
-                        ${(item.quantity * Number(item.price)).toFixed(2)}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-slate-500">Your cart is empty.</p>
-              )}
-            </>
-          )}
-        </section>
-
-        {/* Order History */}
-        <section className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-800">
-              Order History
-            </h2>
-
-            <button
-              onClick={() => setShowOrders(!showOrders)}
-              className="text-xs px-3 py-1 rounded-full bg-blue-600 hover:bg-blue-700"
-            >
-              {showOrders ? "Hide" : "Show"}
-            </button>
-          </div>
-
-          {showOrders && (
-            <>
-              {orders.length > 0 ? (
-                <div className="space-y-6">
-                  {orders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="border border-slate-200 rounded-lg p-4"
-                    >
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <p className="font-semibold text-slate-900">
-                            Order #{order.id}
-                          </p>
-                          <p className="text-sm text-slate-500">
-                            {new Date(order.orderDate).toLocaleDateString()}
+            {activeSection === "orders" && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Order History</h2>
+                {orders.length > 0 ? (
+                  <div className="space-y-6">
+                    {orders.map((order) => (
+                      <div
+                        key={order.id}
+                        className="border border-slate-200 rounded-lg p-4"
+                      >
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <p className="font-semibold text-slate-900">
+                              Order #{order.id}
+                            </p>
+                            <p className="text-sm text-slate-500">
+                              {new Date(order.orderDate).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <span
+                            className={`text-xs font-medium px-2 py-1 rounded-full ${
+                              order.status === "Shipped"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-slate-100 text-slate-600"
+                            }`}
+                          >
+                            {order.status}
+                          </span>
+                        </div>
+                        <ul className="text-sm divide-y divide-slate-100 mb-3">
+                          {order.items.map((item, index) => (
+                            <li
+                              key={index}
+                              className="py-2 flex justify-between"
+                            >
+                              <span>
+                                {item.productName} (x{item.quantity})
+                              </span>
+                              <span>${Number(item.unitPrice).toFixed(2)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="border-t border-slate-200 pt-2 text-right">
+                          <p className="text-sm font-semibold text-slate-900">
+                            Total: ${Number(order.totalAmount).toFixed(2)}
                           </p>
                         </div>
-
-                        <span
-                          className={`text-xs font-medium px-2 py-1 rounded-full ${
-                            order.status === "Shipped"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-slate-100 text-slate-600"
-                          }`}
-                        >
-                          {order.status}
-                        </span>
                       </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500">
+                    You have no past orders.
+                  </p>
+                )}
+              </div>
+            )}
 
-                      <ul className="text-sm divide-y divide-slate-100 mb-3">
-                        {order.items.map((item, index) => (
-                          <li
-                            key={index}
-                            className="py-2 flex justify-between"
-                          >
-                            <span>
-                              {item.productName} (x{item.quantity})
-                            </span>
-                            <span>${Number(item.unitPrice).toFixed(2)}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <div className="border-t border-slate-200 pt-2 text-right">
-                        <p className="text-sm font-semibold text-slate-900">
-                          Total: ${Number(order.totalAmount).toFixed(2)}
+            {activeSection === "cart" && (
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Active Cart</h2>
+                {cart.length > 0 ? (
+                  <ul className="divide-y divide-slate-200">
+                    {cart.map((item) => (
+                      <li
+                        key={item.productId}
+                        className="py-3 flex justify-between items-center"
+                      >
+                        <div>
+                          <p className="font-medium text-slate-900">
+                            {item.name}
+                          </p>
+                          <p className="text-sm text-slate-500">
+                            {item.quantity} x ${Number(item.price).toFixed(2)}
+                          </p>
+                        </div>
+                        <p className="text-sm font-medium text-slate-900">
+                          ${(item.quantity * Number(item.price)).toFixed(2)}
                         </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-slate-500">You have no past orders.</p>
-              )}
-            </>
-          )}
-        </section>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-slate-500">Your cart is empty.</p>
+                )}
+              </div>
+            )}
+          </section>
+        </div>
       </div>
     </main>
   );
