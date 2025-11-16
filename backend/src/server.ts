@@ -8,6 +8,7 @@ import orders from './routes/orders';
 import payments from './routes/payments';
 import customers from './routes/customers';
 import auth from './routes/auth';
+import cartRoutes from './routes/cart';
 const app = express();
 
 // allow requests from frontend
@@ -25,6 +26,7 @@ app.use('/api/orders', orders);
 app.use('/api/payments', payments);
 app.use('/api/customers', customers);
 app.use('/api/auth', auth);
+app.use('/api/cart', cartRoutes);
 
 
 // catch any errors

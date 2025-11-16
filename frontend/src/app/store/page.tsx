@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 
 type Customer = {
   customerid: number;
@@ -10,96 +10,81 @@ type Customer = {
 };
 
 type Product = {
-  id: number; 
+  id: number;
   name: string;
   price: number;
 };
 
-
-type ModalInfo = {
-  show: boolean;
-  message: string;
-  type: "alert" | "confirm";
-  onConfirm?: () => void;
-};
-
 export default function StorePage() {
-  // --- State ---
+  const router = useRouter();
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
+  const [cartCount, setCartCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
-
-  const [modal, setModal] = useState<ModalInfo>({
-    show: false,
-    message: "",
-    type: "alert",
-  });
 
   const API_BASE = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api").replace(
     /\/*$/,
     ""
   );
 
-  // --- Auth Check & Data Loading ---
+  //Auth & Initial Load
   useEffect(() => {
+    //Check Auth
     let rawCustomer: string | null = null;
     try {
       rawCustomer = localStorage.getItem("customer");
     } catch (err) {
-      // Fails in environments where localStorage is blocked
       router.replace("/login");
       return;
     }
 
-    // 1. Auth Guard: Check if user is logged in
     if (!rawCustomer) {
       router.replace("/login");
       return;
     }
 
-    try {
-      const parsedCustomer = JSON.parse(rawCustomer) as Customer;
-      setCustomer(parsedCustomer);
-    } catch (err) {
-      // Data was corrupted, clear it
-      localStorage.removeItem("customer");
-      router.replace("/login");
-      return;
-    }
+    const parsedCustomer = JSON.parse(rawCustomer) as Customer;
+    setCustomer(parsedCustomer);
 
-    // 2. Load Products
-    loadProducts();
-    setIsLoading(false);
-  }, [router, API_BASE]);
+    Promise.all([
+      fetchProducts(),
+      fetchCartCount(parsedCustomer.customerid)
+    ]).finally(() => setIsLoading(false));
 
-  // --- Data Functions ---
-  const loadProducts = async () => {
+  }, [router]);
+
+  // Data Fetching
+  const fetchProducts = async () => {
     try {
       const res = await fetch(`${API_BASE}/products`);
-      if (!res.ok) throw new Error("Failed to fetch products");
-      const data = await res.json();
-      setProducts(data);
-    } catch (err: any) {
-      setModal({
-        show: true,
-        message: err.message || "Could not load products.",
-        type: "alert",
-      });
+      if (res.ok) {
+        const data = await res.json();
+        setProducts(data);
+      }
+    } catch (err) {
+      console.error("Failed to load products", err);
     }
   };
 
-  // --- Customer Function ---
-  const handleAddToCart = async (productId: number) => {
-    if (!customer) {
-      setModal({ show: true, message: "You must be logged in.", type: "alert" });
-      return;
+  const fetchCartCount = async (customerId: number) => {
+    try {
+      const res = await fetch(`${API_BASE}/cart/count/${customerId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setCartCount(data.count);
+      }
+    } catch (err) {
+      console.error("Failed to load cart count", err);
     }
+  };
 
-    // ---
-    // API endpoint for cart added here.
-    // need to create 'POST /api/cart/add' in your backend project. Soon
-    // ---
+  //Add to Cart Handler
+  const handleAddToCart = async (productId: number) => {
+    if (!customer) return;
+
+    // Update UI
+    setCartCount(prev => prev + 1);
+
     try {
       const res = await fetch(`${API_BASE}/cart/add`, {
         method: "POST",
@@ -107,22 +92,21 @@ export default function StorePage() {
         body: JSON.stringify({
           customerId: customer.customerid,
           productId: productId,
-          quantity: 1, // Default to adding 1
+          quantity: 1,
         }),
       });
 
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Failed to add to cart");
+        // Revert on failure
+        setCartCount(prev => prev - 1);
+        alert("Failed to add item.");
       }
-
-      setModal({ show: true, message: "Product added to cart!", type: "alert" });
-    } catch (err: any) {
-      setModal({ show: true, message: err.message, type: "alert" });
+    } catch (err) {
+      setCartCount(prev => prev - 1);
+      console.error(err);
     }
   };
 
-  // --- Render ---
   if (isLoading) {
     return (
       <main className="min-h-screen flex items-center justify-center bg-slate-100">
@@ -132,96 +116,47 @@ export default function StorePage() {
   }
 
   return (
-    <>
-      <main className="min-h-screen bg-slate-50 p-4 md:p-8">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold text-slate-900 mb-6">Store</h1>
-          {products.length === 0 ? (
-            <p className="text-slate-600">No products found.</p>
-          ) : (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {products.map((p) => (
-                <div
-                  key={p.id}
-                  className="bg-white rounded-xl shadow-md p-5 border border-slate-200 flex flex-col"
-                >
-                  <div className="flex-grow mb-4">
-                    <h2 className="text-lg font-semibold text-slate-900">{p.name}</h2>
-                    <p className="text-slate-700 font-medium">
-                      ${Number(p.price).toFixed(2)}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleAddToCart(p.id)}
-                    className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition"
-                  >
-                    Add to Cart
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
-
-      {/* Re-usable Modal */}
-      <CustomModal
-        show={modal.show}
-        message={modal.message}
-        type={modal.type}
-        onClose={() => setModal({ ...modal, show: false })}
-        onConfirm={modal.onConfirm}
-      />
-    </>
-  );
-}
-
-// --- Re-usable Modal Component ---
-function CustomModal({
-  show,
-  message,
-  type,
-  onClose,
-  onConfirm,
-}: {
-  show: boolean;
-  message: string;
-  type: "alert" | "confirm";
-  onClose: () => void;
-  onConfirm?: () => void;
-}) {
-  if (!show) return null;
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg p-6 shadow-xl max-w-sm w-full">
-        <h3 className="text-lg font-medium text-slate-900 mb-4">
-          {type === "confirm" ? "Confirmation" : "Notification"}
-        </h3>
-        <p className="text-sm text-slate-600 mb-6">{message}</p>
-        <div className="flex gap-2">
+    <main className="min-h-screen bg-slate-50 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 sticky top-4 z-10 bg-slate-50/90 backdrop-blur-sm py-2">
+          <h1 className="text-3xl font-bold text-slate-900">Store</h1>
+          
           <button
-            onClick={onClose}
-            className={`w-full py-2 rounded-lg ${
-              type === "alert"
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-            }`}
+            onClick={() => router.push("/checkout")}
+            className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition shadow-lg transform active:scale-95"
           >
-            {type === "alert" ? "OK" : "Cancel"}
+            <span className="font-bold">Proceed to Checkout</span>
+            {cartCount > 0 && (
+              <span className="bg-white text-blue-600 text-xs font-bold px-2 py-1 rounded-full min-w-[20px] text-center">
+                {cartCount}
+              </span>
+            )}
           </button>
-          {type === "confirm" && (
-            <button
-              onClick={() => {
-                onConfirm?.();
-                onClose();
-              }}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-            >
-              Confirm
-            </button>
-          )}
         </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {products.map((p) => (
+            <div
+              key={p.id}
+              className="bg-white rounded-2xl shadow-sm p-5 border border-slate-100 flex flex-col hover:shadow-md transition"
+            >
+              <div className="flex-grow mb-4">
+                <h2 className="text-lg font-bold text-slate-900">{p.name}</h2>
+                <p className="text-slate-600 font-medium mt-1">
+                  ${Number(p.price).toFixed(2)}
+                </p>
+              </div>
+              <button
+                onClick={() => handleAddToCart(p.id)}
+                className="w-full bg-slate-900 text-white font-medium py-2.5 px-4 rounded-lg hover:bg-slate-800 transition active:bg-slate-700"
+              >
+                Add to Cart
+              </button>
+            </div>
+          ))}
+        </div>
+
       </div>
-    </div>
+    </main>
   );
 }
