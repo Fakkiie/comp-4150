@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { q } from "../db";
+import { requireAdmin } from "../middleware/requireAdmin";
 
 const r = Router();
 
-/* ========= GET ALL PRODUCTS ========= */
+/* ========= GET ALL PRODUCTS (PUBLIC) ========= */
 r.get("/", async (_req, res) => {
   try {
     const { rows } = await q(
@@ -22,8 +23,8 @@ r.get("/", async (_req, res) => {
   }
 });
 
-/* ========= CREATE PRODUCT ========= */
-r.post("/", async (req, res) => {
+/* ========= CREATE PRODUCT (ADMIN ONLY) ========= */
+r.post("/", requireAdmin, async (req, res) => {
   const { name, price, stock } = req.body;
 
   if (!name || price == null || stock == null) {
@@ -44,8 +45,8 @@ r.post("/", async (req, res) => {
   }
 });
 
-/* ========= UPDATE PRODUCT ========= */
-r.put("/:id", async (req, res) => {
+/* ========= UPDATE PRODUCT (ADMIN ONLY) ========= */
+r.put("/:id", requireAdmin, async (req, res) => {
   const id = Number(req.params.id);
   const { name, price } = req.body;
 
@@ -69,8 +70,8 @@ r.put("/:id", async (req, res) => {
   }
 });
 
-/* ========= DELETE PRODUCT ========= */
-r.delete("/:id", async (req, res) => {
+/* ========= DELETE PRODUCT (ADMIN ONLY) ========= */
+r.delete("/:id", requireAdmin, async (req, res) => {
   const id = Number(req.params.id);
 
   try {
