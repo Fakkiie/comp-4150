@@ -1,10 +1,18 @@
 import { Router } from "express";
 import { q } from "../db";
-import { requireAdmin } from "../middleware/requireAdmin";
 
 const r = Router();
 
-/* ========= GET ALL PRODUCTS (PUBLIC) ========= */
+/* ========= ADMIN CHECK (minimal version) ========= */
+async function isAdmin(customerId: number) {
+  const result = await q(
+    "SELECT isadmin FROM customer WHERE customerid = $1",
+    [customerId]
+  );
+  return result.rows[0]?.isadmin === true;
+}
+
+/* ========= GET ALL PRODUCTS ========= */
 r.get("/", async (_req, res) => {
   try {
     const { rows } = await q(
@@ -24,11 +32,15 @@ r.get("/", async (_req, res) => {
 });
 
 /* ========= CREATE PRODUCT (ADMIN ONLY) ========= */
-r.post("/", requireAdmin, async (req, res) => {
-  const { name, price, stock } = req.body;
+r.post("/", async (req, res) => {
+  const { name, price, stock, customerId } = req.body;
 
-  if (!name || price == null || stock == null) {
+  if (!name || price == null || stock == null || !customerId) {
     return res.status(400).json({ error: "Missing fields" });
+  }
+
+  if (!(await isAdmin(customerId))) {
+    return res.status(403).json({ error: "Admins only" });
   }
 
   try {
@@ -46,9 +58,17 @@ r.post("/", requireAdmin, async (req, res) => {
 });
 
 /* ========= UPDATE PRODUCT (ADMIN ONLY) ========= */
-r.put("/:id", requireAdmin, async (req, res) => {
+r.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { name, price } = req.body;
+  const { name, price, customerId } = req.body;
+
+  if (!customerId) {
+    return res.status(400).json({ error: "Missing customerId" });
+  }
+
+  if (!(await isAdmin(customerId))) {
+    return res.status(403).json({ error: "Admins only" });
+  }
 
   try {
     const { rows } = await q(
@@ -71,8 +91,17 @@ r.put("/:id", requireAdmin, async (req, res) => {
 });
 
 /* ========= DELETE PRODUCT (ADMIN ONLY) ========= */
-r.delete("/:id", requireAdmin, async (req, res) => {
+r.delete("/:id", async (req, res) => {
   const id = Number(req.params.id);
+  const { customerId } = req.body;
+
+  if (!customerId) {
+    return res.status(400).json({ error: "Missing customerId" });
+  }
+
+  if (!(await isAdmin(customerId))) {
+    return res.status(403).json({ error: "Admins only" });
+  }
 
   try {
     const { rowCount } = await q(
