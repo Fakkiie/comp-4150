@@ -3,8 +3,7 @@ import { q } from "../db";
 
 const r = Router();
 
-
-// sign up route to post new user to our db
+// SIGNUP — always non-admin
 r.post("/signup", async (req, res) => {
   const { email, fullName, password } = req.body || {};
 
@@ -14,10 +13,10 @@ r.post("/signup", async (req, res) => {
 
   try {
     const { rows } = await q(
-      `INSERT INTO customer (email, fullname, passwordhash)
-       VALUES ($1, $2, $3)
-       RETURNING customerid, email, fullname`,
-      [email, fullName || null, password] 
+      `INSERT INTO customer (email, fullname, passwordhash, isadmin)
+       VALUES ($1, $2, $3, FALSE)
+       RETURNING customerid, email, fullname, isadmin`,
+      [email, fullName || null, password]
     );
 
     const user = rows[0];
@@ -31,8 +30,7 @@ r.post("/signup", async (req, res) => {
   }
 });
 
-
-// login route to authenticate existing user
+// LOGIN — returns isAdmin
 r.post("/login", async (req, res) => {
   const { email, password } = req.body || {};
 
@@ -42,7 +40,9 @@ r.post("/login", async (req, res) => {
 
   try {
     const { rows } = await q(
-      "SELECT customerid, email, fullname, passwordhash FROM customer WHERE email = $1",
+      `SELECT customerid, email, fullname, passwordhash, isadmin
+       FROM customer
+       WHERE email = $1`,
       [email]
     );
 
@@ -52,13 +52,21 @@ r.post("/login", async (req, res) => {
 
     const user = rows[0];
 
-    // simple string compare, since passwordhash is not actually hashed
     if (user.passwordhash !== password) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
     delete user.passwordhash;
-    res.json({ ok: true, user });
+
+    res.json({
+      ok: true,
+      user: {
+        customerId: user.customerid,
+        email: user.email,
+        fullName: user.fullname,
+        isAdmin: user.isadmin
+      }
+    });
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ error: err.message || String(err) });
