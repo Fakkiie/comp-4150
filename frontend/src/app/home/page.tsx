@@ -1,1 +1,0 @@
-//we use folders and page.tsx to enable new pages to be routed to 
