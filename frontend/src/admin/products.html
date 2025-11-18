@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-50">
+    <main class="min-h-screen bg-slate-50">
+        <div class="relative z-10 mx-auto max-w-5xl px-4 py-8 space-y-8">
+            <header class="flex items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
+                        Admin Dashboard
+                    </h1>
+                    <p class="text-sm md:text-base text-slate-500 mt-1">
+                        Manage your store
+                    </p>
+                </div>
+                <button class="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 text-xs md:text-sm font-medium text-white hover:bg-blue-700">
+                    Back to Store
+                </button>
+            </header>
+            <div class="flex gap-6">
+                <!-- Left Sidebar -->
+                <aside class="w-64 bg-white rounded-lg shadow p-4">
+                    <div class="border-b pb-4 mb-4">
+                        <p class="text-lg font-semibold text-slate-800">
+                            Admin User
+                        </p>
+                        <p class="text-sm text-slate-500">admin@example.com</p>
+                    </div>
+                    <nav class="space-y-2">
+                        <a href="dashboard.html" class="w-full text-left px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 block">
+                            Dashboard
+                        </a>
+                        <a href="products.html" class="w-full text-left px-4 py-2 rounded-lg bg-blue-600 text-white block">
+                            Products
+                        </a>
+                        <a href="orders.html" class="w-full text-left px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 block">
+                            Orders
+                        </a>
+                        <a href="customers.html" class="w-full text-left px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 block">
+                            Customers
+                        </a>
+                    </nav>
+                </aside>
+
+                <!-- Right Content -->
+                <section class="flex-1 bg-white rounded-lg shadow p-6 text-black font-normal">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold">Products Management</h2>
+                        <button class="inline-flex items-center justify-center rounded-full bg-orange-600 px-4 py-2 text-xs font-medium text-white hover:bg-orange-700">
+                            Manage Products
+                            <!-- add link to product management page-->
+                        </button>
+                    </div>
+                    
+                    <div class="border border-slate-200 rounded-lg">
+                        <div class="p-4 border-b border-slate-200">
+                            <p class="font-medium">Book 1</p>
+                            <p class="text-sm text-slate-500">Stock: 42 | Price: $99.99</p>
+                        </div>
+                        <div class="p-4 border-b border-slate-200">
+                            <p class="font-medium">Book 2</p>
+                            <p class="text-sm text-slate-500">Stock: 156 | Price: $24.99</p>
+                        </div>
+                        <div class="p-4">
+                            <p class="font-medium">Book 3</p>
+                            <p class="text-sm text-slate-500">Stock: 8 | Price: $79.99</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

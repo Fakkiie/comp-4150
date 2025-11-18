@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-50">
+    <main class="min-h-screen bg-slate-50">
+        <div class="relative z-10 mx-auto max-w-5xl px-4 py-8 space-y-8">
+            <header class="flex items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-900">
+                        Admin Dashboard
+                    </h1>
+                    <p class="text-sm md:text-base text-slate-500 mt-1">
+                        Manage your store
+                    </p>
+                </div>
+                <button class="inline-flex items-center justify-center rounded-full bg-blue-600 px-4 py-2 text-xs md:text-sm font-medium text-white hover:bg-blue-700">
+                    Back to Store
+                </button>
+            </header>
+            <div class="flex gap-6">
+                <!-- Left Sidebar -->
+                <aside class="w-64 bg-white rounded-lg shadow p-4">
+                    <div class="border-b pb-4 mb-4">
+                        <p class="text-lg font-semibold text-slate-800">
+                            Admin User
+                        </p>
+                        <p class="text-sm text-slate-500">admin@example.com</p>
+                    </div>
+                    <nav class="space-y-2">
+                        <a href="dashboard.html" class="w-full text-left px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 block">
+                            Dashboard
+                        </a>
+                        <a href="products.html" class="w-full text-left px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 block">
+                            Products
+                        </a>
+                        <a href="orders.html" class="w-full text-left px-4 py-2 rounded-lg bg-blue-600 text-white block">
+                            Orders
+                        </a>
+                        <a href="customers.html" class="w-full text-left px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 block">
+                            Customers
+                        </a>
+                    </nav>
+                </aside>
+
+                <!-- Right Content -->
+                <section class="flex-1 bg-white rounded-lg shadow p-6 text-black font-normal">
+                    <h2 class="text-xl font-semibold mb-6">Orders Management</h2>
+                    
+                    <div class="border border-slate-200 rounded-lg">
+                        <div class="p-4 border-b border-slate-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium">Order #1256</p>
+                                    <p class="text-sm text-slate-500">John Smith • $149.98</p>
+                                </div>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Shipped</span>
+                            </div>
+                        </div>
+                        <div class="p-4 border-b border-slate-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium">Order #1255</p>
+                                    <p class="text-sm text-slate-500">Sarah Johnson • $79.99</p>
+                                </div>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Processing</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium">Order #1254</p>
+                                    <p class="text-sm text-slate-500">Mike Wilson • $224.97</p>
+                                </div>
+                                <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs">Pending</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
