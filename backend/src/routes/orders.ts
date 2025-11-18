@@ -3,20 +3,51 @@ import { q } from "../db";
 
 const r = Router();
 
-// Get all orders for a specific customer 
+// get all orders for a customer
 r.get("/customer/:customerId", async (req, res) => {
   const { customerId } = req.params;
 
   try {
-    // Note: Order is reserved word in SQL. "" allows us to use it
     const { rows } = await q(
-      `SELECT orderid, orderdate, status, totalamount, shippingaddress 
-       FROM "Order" 
-       WHERE customerid = $1 
-       ORDER BY orderdate DESC`,
+      `
+      SELECT 
+        o.orderid,
+        o.orderdate,
+        o.status,
+        o.totalamount,
+        o.shippingaddress,
+        json_agg(
+          json_build_object(
+            'productName', p.name,
+            'quantity', oi.quantity,
+            'unitPrice', oi.unitpriceatorder
+          )
+        ) AS items
+      FROM "Order" o
+      JOIN orderitem oi ON o.orderid = oi.orderid
+      JOIN product p ON oi.productid = p.productid
+      WHERE o.customerid = $1
+      GROUP BY 
+        o.orderid,
+        o.orderdate,
+        o.status,
+        o.totalamount,
+        o.shippingaddress
+      ORDER BY o.orderdate DESC
+      `,
       [customerId]
     );
-    res.json(rows);
+
+    const orders = rows.map((row: any) => ({
+      id: row.orderid,
+      orderDate: row.orderdate,
+      status: row.status,
+      totalAmount: row.totalamount,
+      shippingAddress: row.shippingaddress,
+      items: row.items ?? [],
+    }));
+
+    res.json(orders);
   } catch (err: any) {
     console.error("Error fetching customer orders:", err);
     res.status(500).json({ error: err.message });

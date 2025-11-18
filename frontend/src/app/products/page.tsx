@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
+import Header from "@/components/Header";
 export default function ProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -50,7 +50,10 @@ export default function ProductsPage() {
   };
 
   return (
-  <main className="min-h-screen bg-slate-100 px-4 py-8">
+  <main className="min-h-screen bg-slate-100 px-4 ">
+    <div className="pb-2">
+      <Header />
+    </div>
     <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow p-6">
       <h1 className="text-2xl font-bold mb-6 text-slate-900">Product Management</h1>
 

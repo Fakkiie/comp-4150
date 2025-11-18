@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Header from "@/components/Header";
 type Customer = {
   customerid: number;
   email: string;
@@ -93,7 +93,10 @@ export default function MyOrdersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6">
+    <main className="min-h-screen bg-slate-50">
+      <div className="pb-2">
+        <Header />
+      </div>
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-slate-900">My Orders</h1>

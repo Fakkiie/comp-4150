@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Header from "@/components/Header";
 type Customer = {
   customerid: number;
   email: string;
@@ -38,17 +38,14 @@ export default function ProfilePage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // 🔹 New toggle states
   // const [showProfileDetails, setShowProfileDetails] = useState(true);
   // const [showCart, setShowCart] = useState(true);
   // const [showOrders, setShowOrders] = useState(true);
   const [activeSection, setActiveSection] = useState("personal");
 
-  const API_BASE =
-    (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api").replace(
-      /\/*$/,
-      ""
-    );
+  const API_BASE = (
+    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api"
+  ).replace(/\/*$/, "");
 
   useEffect(() => {
     const customerData = localStorage.getItem("customer");
@@ -59,17 +56,35 @@ export default function ProfilePage() {
       const fetchProfileData = async () => {
         try {
           const [cartRes, ordersRes] = await Promise.all([
-            fetch(`${API_BASE}/customer/${parsedCustomer.customerid}/cart`),
-            fetch(`${API_BASE}/customer/${parsedCustomer.customerid}/orders`),
+            fetch(`${API_BASE}/cart/${parsedCustomer.customerid}`),
+            fetch(`${API_BASE}/orders/customer/${parsedCustomer.customerid}`),
           ]);
 
-          if (!cartRes.ok)
-            throw new Error(`Failed to fetch cart: ${cartRes.status}`);
-          if (!ordersRes.ok)
-            throw new Error(`Failed to fetch orders: ${ordersRes.status}`);
+          let cartData: CartItem[] = [];
+          let ordersData: Order[] = [];
 
-          setCart(await cartRes.json().catch(() => []));
-          setOrders(await ordersRes.json().catch(() => []));
+          if (cartRes.ok) {
+            cartData = await cartRes.json().catch(() => []);
+          } else {
+            console.error(
+              "Cart fetch failed",
+              cartRes.status,
+              await cartRes.text().catch(() => "")
+            );
+          }
+
+          if (ordersRes.ok) {
+            ordersData = await ordersRes.json().catch(() => []);
+          } else {
+            console.error(
+              "Orders fetch failed",
+              ordersRes.status,
+              await ordersRes.text().catch(() => "")
+            );
+          }
+
+          setCart(Array.isArray(cartData) ? cartData : []);
+          setOrders(Array.isArray(ordersData) ? ordersData : []);
         } catch (error) {
           console.error("Failed to load profile data", error);
         } finally {
@@ -96,6 +111,7 @@ export default function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
+      <Header />
       <div className="relative z-10 mx-auto max-w-5xl px-4 py-8 space-y-8">
         <header className="flex items-center justify-between gap-4">
           <div>
@@ -117,7 +133,9 @@ export default function ProfilePage() {
           {/* Left Sidebar */}
           <aside className="w-64 bg-white rounded-lg shadow p-4">
             <div className="border-b pb-4 mb-4">
-              <p className="text-lg font-semibold text-slate-800">{customer.fullname || "User"}</p>
+              <p className="text-lg font-semibold text-slate-800">
+                {customer.fullname || "User"}
+              </p>
               <p className="text-sm text-slate-500">{customer.email}</p>
             </div>
             <nav className="space-y-2">
@@ -253,9 +271,9 @@ export default function ProfilePage() {
                 <h2 className="text-xl font-semibold mb-4">Active Cart</h2>
                 {cart.length > 0 ? (
                   <ul className="divide-y divide-slate-200">
-                    {cart.map((item) => (
+                    {cart.map((item, index) => (
                       <li
-                        key={item.productId}
+                        key={`${item.productId}-${index}`}
                         className="py-3 flex justify-between items-center"
                       >
                         <div>

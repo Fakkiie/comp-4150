@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Header from "@/components/Header";
 type Customer = {
   customerid: number;
   email: string;
@@ -108,7 +108,11 @@ export default function StorePage() {
   if (isLoading) return <div className="p-8 text-center">Loading...</div>;
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6">
+    <main className="min-h-screen bg-slate-50 ">
+      <div className="pb-2">
+        <Header />
+      </div>
+
       <div className="max-w-6xl mx-auto">
         
         {/* TOP BAR: Header & Checkout Button */}
