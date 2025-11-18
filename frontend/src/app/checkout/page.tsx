@@ -20,10 +20,9 @@ type CartItem = {
 export default function CheckoutPage() {
   const router = useRouter();
   const [customer, setCustomer] = useState<Customer | null>(null);
-  const [cartTotal, setCartTotal] = useState(0);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   
-  // Form State
   const [address, setAddress] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -32,7 +31,7 @@ export default function CheckoutPage() {
     ""
   );
 
-  // Auth & Load Cart 
+  // Auth & Load Cart
   useEffect(() => {
     let rawCustomer = null;
     try {
@@ -47,13 +46,10 @@ export default function CheckoutPage() {
     const parsedCustomer = JSON.parse(rawCustomer) as Customer;
     setCustomer(parsedCustomer);
 
-    // Fetch Cart to get the Total Amount
     fetch(`${API_BASE}/cart/${parsedCustomer.customerid}`)
       .then((res) => res.json())
       .then((data: CartItem[]) => {
-        // Calculate total locally
-        const total = data.reduce((sum, item) => sum + Number(item.total_price), 0);
-        setCartTotal(total);
+        setCartItems(data);
         setLoading(false);
       })
       .catch((err) => {
@@ -62,15 +58,97 @@ export default function CheckoutPage() {
       });
   }, [router, API_BASE]);
 
-  //Handle Order Placement
+  const updateCartItemQuantity = (productId: number, newQuantity: number) => {
+    setCartItems(prev => {
+      // If new quantity is 0, remove the item
+      if (newQuantity === 0) {
+        return prev.filter(item => item.productid !== productId);
+      }
+      // Otherwise, update the quantity and total
+      return prev.map(item => {
+        if (item.productid === productId) {
+          // Recalculate total_price based on the single item price
+          return {
+            ...item,
+            quantity: newQuantity,
+            total_price: item.price * newQuantity,
+          };
+        }
+        return item;
+      });
+    });
+  };
+
+  //Increase Quantity
+  const handleIncreaseQuantity = async (productId: number) => {
+    if (!customer) return;
+
+    const item = cartItems.find(i => i.productid === productId);
+    if (!item) return;
+
+    const oldCart = cartItems;
+    updateCartItemQuantity(productId, item.quantity + 1);
+
+    try {
+      const res = await fetch(`${API_BASE}/cart/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerId: customer.customerid,
+          productId: productId,
+          quantity: 1, // Add 1
+        }),
+      });
+      if (!res.ok) {
+        setCartItems(oldCart); // Revert on failure
+        alert("Failed to update item.");
+      }
+    } catch (err) {
+      setCartItems(oldCart);
+      alert("Error updating item.");
+    }
+  };
+
+  // Decrease Quantity 
+  const handleDecreaseQuantity = async (productId: number) => {
+    if (!customer) return;
+
+    const item = cartItems.find(i => i.productid === productId);
+    if (!item) return;
+
+    const oldCart = cartItems;
+    updateCartItemQuantity(productId, item.quantity - 1);
+
+    try {
+      // calls the POST /decrease route in cart.ts
+      const res = await fetch(`${API_BASE}/cart/decrease`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerId: customer.customerid,
+          productId: productId,
+        }),
+      });
+
+      if (!res.ok) {
+        setCartItems(oldCart); // Revert on failure
+        alert("Failed to update item.");
+      }
+    } catch (err) {
+      setCartItems(oldCart);
+      alert("Error updating item.");
+    }
+  };
+
+  // Calculate Total from state 
+  const cartTotal = cartItems.reduce((sum, item) => sum + Number(item.total_price), 0);
+
+  // Handle Order Placement
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customer) return;
-
     setIsProcessing(true);
-
     try {
-      // Call Order API
       const res = await fetch(`${API_BASE}/orders/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,16 +157,10 @@ export default function CheckoutPage() {
           shippingaddress: address,
         }),
       });
-
       const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to place order");
-      }
-
+      if (!res.ok) throw new Error(data.error || "Failed to place order");
       alert(`Order Placed Successfully! Order ID: ${data.orderid}`);
       router.push("/orders");
-      
     } catch (err: any) {
       console.error(err);
       alert(`Error: ${err.message}`);
@@ -108,10 +180,52 @@ export default function CheckoutPage() {
     <main className="min-h-screen bg-slate-50 p-6 flex justify-center">
       <div className="max-w-2xl w-full">
         <h1 className="text-3xl font-bold text-slate-900 mb-8">Checkout</h1>
-
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8">
+          
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-slate-800 mb-4">Review Your Items</h2>
+            <div className="space-y-4">
+              {cartItems.length > 0 ? (
+                cartItems.map(item => (
+                  <div key={item.productid} className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-semibold text-slate-800">{item.name}</h3>
+                      <p className="text-sm text-slate-500">
+                        ${Number(item.price).toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {/* --- Quantity Controls --- */}
+                      <button 
+                        onClick={() => handleDecreaseQuantity(item.productid)}
+                        className="w-7 h-7 flex items-center justify-center bg-slate-100 rounded-full text-lg text-slate-600 hover:bg-slate-200"
+                      >
+                        -
+                      </button>
+                      <span className="w-8 text-center font-medium text-slate-700">
+                        {item.quantity}
+                      </span>
+                      <button 
+                        onClick={() => handleIncreaseQuantity(item.productid)}
+                        className="w-7 h-7 flex items-center justify-center bg-slate-100 rounded-full text-lg text-slate-600 hover:bg-slate-200"
+                      >
+                        +
+                      </button>
+                      {/* --- End Controls --- */}
+                      <span className="font-medium text-slate-700 w-20 text-right">
+                        ${Number(item.total_price).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-slate-500 text-center">Your cart is empty.</p>
+              )}
+            </div>
+          </div>
+
           {/* Order Summary */}
-          <div className="mb-8 pb-8 border-b border-slate-100">
+          <div className="mb-8 pb-8 border-y border-slate-100 py-8">
             <h2 className="text-xl font-semibold text-slate-800 mb-4">Order Summary</h2>
             <div className="flex justify-between items-center text-lg">
               <span className="text-slate-600">Total Amount</span>
