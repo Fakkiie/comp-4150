@@ -10,7 +10,7 @@ export default function Header() {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("customer");
+      const raw = localStorage.getItem("user");
       if (raw) {
         const c = JSON.parse(raw);
         setName(c.fullname || c.email || null);
@@ -22,7 +22,7 @@ export default function Header() {
 
   const handleLogout = () => {
     try {
-      localStorage.removeItem("customer");
+      localStorage.removeItem("user");
     } catch {
       // ignore
     }
@@ -39,9 +39,11 @@ export default function Header() {
           <Link href="/store" className="text-slate-600 hover:text-slate-900">
             Store
           </Link>
-          <Link href="/products" className="text-slate-600 hover:text-slate-900">
-            Products
-          </Link>
+          {user?.isAdmin && (
+            <Link href="/products" className="text-slate-600 hover:text-slate-900">
+              Products
+            </Link>
+          )}
           <Link href="/orders" className="text-slate-600 hover:text-slate-900">
             Orders
           </Link>
