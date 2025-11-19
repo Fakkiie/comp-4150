@@ -11,7 +11,7 @@ export default function Header() {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("user");
+      const raw = localStorage.getItem("customer");
       if (raw) {
         const u = JSON.parse(raw);
         setUser(u);
