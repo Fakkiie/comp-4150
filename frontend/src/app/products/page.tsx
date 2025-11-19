@@ -15,7 +15,7 @@ export default function ProductsPage() {
 
   // Admin check
   useEffect(() => {
-    const stored = localStorage.getItem("user");
+    const stored = localStorage.getItem("customer");
     if (!stored) {
       router.push("/login");
       return;
