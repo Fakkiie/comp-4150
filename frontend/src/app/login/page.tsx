@@ -25,7 +25,11 @@ export default function LoginPage() {
     try {
       const raw = localStorage.getItem("customer");
       if (raw) {
-        router.replace("/");
+        const user = JSON.parse(raw);
+        // changed this from isAdmin to isadmin
+        if (user?.isadmin !== undefined) {
+          router.replace("/");
+        }
       }
     } catch {
       // ignore

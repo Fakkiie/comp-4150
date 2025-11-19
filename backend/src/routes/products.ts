@@ -8,12 +8,12 @@ r.get("/", async (_req, res) => {
   try {
     const { rows } = await q(
       `SELECT 
-         productid AS id,
-         name,
-         unitprice AS price,
-         stockqty AS stock
-       FROM product
-       ORDER BY productid`
+          productid AS id,
+          name,
+          unitprice AS price,
+          stockqty AS stock
+        FROM product
+        ORDER BY productid`
     );
     res.json(rows);
   } catch (err: any) {
@@ -23,6 +23,7 @@ r.get("/", async (_req, res) => {
 });
 
 /* ========= CREATE PRODUCT ========= */
+// No manual admin check needed - Frontend handles the redirect
 r.post("/", async (req, res) => {
   const { name, price, stock } = req.body;
 

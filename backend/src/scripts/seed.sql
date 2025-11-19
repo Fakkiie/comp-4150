@@ -1,8 +1,9 @@
 -- Customers
-INSERT INTO Customer (Email, FullName, PasswordHash) VALUES
-('emma.jones@example.com', 'Emma Jones', 'hash123'),
-('michael.smith@example.com', 'Michael Smith', 'hash456'),
-('sophia.wilson@example.com', 'Sophia Wilson', 'hash789');
+INSERT INTO Customer (Email, FullName, PasswordHash, IsAdmin) VALUES
+('emma.jones@example.com', 'Emma Jones', 'hash123', FALSE),
+('michael.smith@example.com', 'Michael Smith', 'hash456', FALSE),
+('sophia.wilson@example.com', 'Sophia Wilson', 'hash789', FALSE),
+('admin@example.com', 'Admin User', 'admin123', TRUE);
 
 -- Products
 INSERT INTO Product (Name, UnitPrice, StockQty) VALUES

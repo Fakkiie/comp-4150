@@ -10,11 +10,11 @@ type Customer = {
 };
 
 type Order = {
-  orderid: number;
-  orderdate: string;
+  id: number;              
+  orderDate: string;       
   status: string;
-  totalamount: number;
-  shippingaddress: string;
+  totalAmount: number;     
+  shippingAddress: string; 
 };
 
 export default function MyOrdersPage() {
@@ -72,7 +72,7 @@ export default function MyOrdersPage() {
         alert("Order cancelled successfully");
         // Refresh list locally to update status
         setOrders(prev => prev.map(o => 
-          o.orderid === orderId ? { ...o, status: "Cancelled" } : o
+          o.id === orderId ? { ...o, status: "Cancelled" } : o
         ));
       } else {
         const data = await res.json();
@@ -122,16 +122,16 @@ export default function MyOrdersPage() {
           <div className="space-y-6">
             {orders.map((order) => (
               <div
-                key={order.orderid}
+                key={order.id}
                 className="bg-white rounded-xl shadow-sm border border-slate-200 p-6"
               >
                 <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                   <div>
                     <h2 className="text-lg font-bold text-slate-900">
-                      Order #{order.orderid}
+                      Order #{order.id}
                     </h2>
                     <p className="text-sm text-slate-500">
-                      Placed on {new Date(order.orderdate).toLocaleDateString()}
+                      Placed on {new Date(order.orderDate).toLocaleDateString()}
                     </p>
                   </div>
                   
@@ -153,7 +153,7 @@ export default function MyOrdersPage() {
                       Total Amount
                     </p>
                     <p className="text-lg font-medium text-slate-900">
-                      ${Number(order.totalamount).toFixed(2)}
+                      ${Number(order.totalAmount).toFixed(2)}
                     </p>
                   </div>
                   <div>
@@ -161,7 +161,7 @@ export default function MyOrdersPage() {
                       Shipping Address
                     </p>
                     <p className="text-sm text-slate-700">
-                      {order.shippingaddress}
+                      {order.shippingAddress}
                     </p>
                   </div>
                 </div>
@@ -169,7 +169,7 @@ export default function MyOrdersPage() {
                 {order.status !== 'Cancelled' && (
                   <div className="mt-6 flex justify-end">
                     <button
-                      onClick={() => handleCancel(order.orderid)}
+                      onClick={() => handleCancel(order.id)}
                       className="text-red-600 text-sm font-medium hover:text-red-800 hover:underline"
                     >
                       Cancel Order

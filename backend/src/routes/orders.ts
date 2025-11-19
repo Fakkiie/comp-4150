@@ -4,8 +4,13 @@ import { q } from "../db";
 const r = Router();
 
 // get all orders for a customer
-r.get("/customer/:customerId", async (req, res) => {
-  const { customerId } = req.params;
+r.get("/customer/:customerid", async (req, res) => {
+  const { customerid } = req.params;
+
+  // Validation Block
+  if (!customerid || isNaN(Number(customerid))) {
+    return res.status(400).json({ error: "Invalid or missing customer ID" });
+  }
 
   try {
     const { rows } = await q(
@@ -35,7 +40,7 @@ r.get("/customer/:customerId", async (req, res) => {
         o.shippingaddress
       ORDER BY o.orderdate DESC
       `,
-      [customerId]
+      [customerid] // <--- FIXED: Matches the const { customerid } above
     );
 
     const orders = rows.map((row: any) => ({

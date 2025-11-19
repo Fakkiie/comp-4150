@@ -15,6 +15,7 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
+    //const stored = localStorage.getItem("customer");
     loadProducts();
   }, []);
 
