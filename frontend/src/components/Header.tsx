@@ -7,6 +7,7 @@ import Link from "next/link";
 export default function Header() {
   const router = useRouter();
   const [name, setName] = useState<string | null>(null);
+  const [isadmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     try {
@@ -14,6 +15,11 @@ export default function Header() {
       if (raw) {
         const c = JSON.parse(raw);
         setName(c.fullname || c.email || null);
+
+        // check admin
+        if (c.isadmin === true) {
+          setIsAdmin(true);
+        }
       }
     } catch {
       // ignore
@@ -39,9 +45,12 @@ export default function Header() {
           <Link href="/store" className="text-slate-600 hover:text-slate-900">
             Store
           </Link>
+          { /* only admins can see product management option*/}
+          {isadmin && (
           <Link href="/products" className="text-slate-600 hover:text-slate-900">
             Products
           </Link>
+          )}
           <Link href="/orders" className="text-slate-600 hover:text-slate-900">
             Orders
           </Link>
