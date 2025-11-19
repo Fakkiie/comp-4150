@@ -1,37 +1,26 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-
-export default function Header() {
-  const router = useRouter();
-  const [name, setName] = useState<string | null>(null);
-  const [isadmin, setIsAdmin] = useState(false);
-
+  
+  import { useEffect, useState } from "react";
+  import { useRouter } from "next/navigation";
+  import Link from "next/link";
+  
+  export default function Header() {
+    const router = useRouter();
+    const [name, setName] = useState<string | null>(null);
+    const [user, setUser] = useState<any>(null);
   useEffect(() => {
     try {
       const raw = localStorage.getItem("customer");
       if (raw) {
-        const c = JSON.parse(raw);
-        setName(c.fullname || c.email || null);
-
-        // check admin
-        if (c.isadmin === true) {
-          setIsAdmin(true);
-        }
+        const u = JSON.parse(raw);
+        setUser(u);
+        setName(u.fullName || u.email || null);
       }
-    } catch {
-      // ignore
-    }
+    } catch {}
   }, []);
 
   const handleLogout = () => {
-    try {
-      localStorage.removeItem("customer");
-    } catch {
-      // ignore
-    }
+    localStorage.clear();
     router.replace("/login");
   };
 
@@ -42,33 +31,22 @@ export default function Header() {
           Bookstore
         </Link>
         <nav className="hidden md:flex items-center gap-3 text-sm">
-          <Link href="/store" className="text-slate-600 hover:text-slate-900">
-            Store
-          </Link>
-          { /* only admins can see product management option*/}
-          {isadmin && (
-          <Link href="/products" className="text-slate-600 hover:text-slate-900">
-            Products
-          </Link>
+          <Link href="/store" className="text-slate-600 hover:text-slate-900">Store</Link>
+
+          {user?.isAdmin === true && (
+          <Link href="/products" className="text-slate-600 hover:text-slate-900">Products</Link>
           )}
-          <Link href="/orders" className="text-slate-600 hover:text-slate-900">
-            Orders
-          </Link>
+
+          <Link href="/orders" className="text-slate-600 hover:text-slate-900">Orders</Link>
         </nav>
       </div>
 
       <div className="flex items-center gap-3">
         {name && <span className="text-sm text-slate-700 hidden sm:inline">Hi, {name}</span>}
-        <button
-          onClick={() => router.push("/profile")}
-          className="text-sm text-slate-700 px-3 py-1 border rounded"
-        >
+        <button onClick={() => router.push("/profile")} className="text-sm text-slate-700 px-3 py-1 border rounded">
           Profile
         </button>
-        <button
-          onClick={handleLogout}
-          className="text-sm text-red-600 px-3 py-1 border border-red-200 rounded hover:bg-red-50"
-        >
+        <button onClick={handleLogout} className="text-sm text-red-600 px-3 py-1 border border-red-200 rounded hover:bg-red-50">
           Log out
         </button>
       </div>

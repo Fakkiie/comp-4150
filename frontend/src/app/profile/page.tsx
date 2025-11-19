@@ -23,10 +23,10 @@ type OrderItem = {
 };
 
 type Order = {
-  id: number;
-  orderDate: string;
+  orderid: number;
+  orderdate: string;
   status: string;
-  totalAmount: string;
+  totalamount: string;
   shippingAddress: string;
   items: OrderItem[];
 };
@@ -215,16 +215,16 @@ export default function ProfilePage() {
                   <div className="space-y-6">
                     {orders.map((order) => (
                       <div
-                        key={order.id}
+                        key={order.orderid}
                         className="border border-slate-200 rounded-lg p-4"
                       >
                         <div className="flex justify-between items-start mb-3">
                           <div>
                             <p className="font-semibold text-slate-900">
-                              Order #{order.id}
+                              Order #{order.orderid}
                             </p>
                             <p className="text-sm text-slate-500">
-                              {new Date(order.orderDate).toLocaleDateString()}
+                              {new Date(order.orderdate).toLocaleDateString()}
                             </p>
                           </div>
                           <span
@@ -252,7 +252,7 @@ export default function ProfilePage() {
                         </ul>
                         <div className="border-t border-slate-200 pt-2 text-right">
                           <p className="text-sm font-semibold text-slate-900">
-                            Total: ${Number(order.totalAmount).toFixed(2)}
+                            Total: ${Number(order.totalamount).toFixed(2)}
                           </p>
                         </div>
                       </div>
