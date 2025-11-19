@@ -21,7 +21,7 @@ export default function Header() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    localStorage.clear();
     router.replace("/login");
   };
 
