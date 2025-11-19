@@ -41,7 +41,7 @@ export default function Header() {
           <Link href="/store" className="text-slate-600 hover:text-slate-900">Store</Link>
 
           {/* FIX 4: reverted isAdmin === True */}
-          {user?.isadmin && (
+          {(user?.isAdmin || user?.isadmin) && ( 
             <Link href="/products" className="text-slate-600 hover:text-slate-900">Products</Link>
           )}
 
