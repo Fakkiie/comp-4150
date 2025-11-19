@@ -83,7 +83,7 @@ export default function ProductsPage() {
 
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow p-6">
         <h1 className="text-2xl font-bold mb-6 text-slate-900">
-          Product Management (Admin Only)
+          Product Management
         </h1>
 
         {products.length === 0 ? (
