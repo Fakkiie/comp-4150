@@ -153,7 +153,7 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerid: customer.customerid,
+          customerId: customer.customerId,
           shippingaddress: address,
         }),
       });
