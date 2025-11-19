@@ -6,6 +6,10 @@ const r = Router();
 // get all orders for a customer
 r.get("/customer/:customerId", async (req, res) => {
   const { customerId } = req.params;
+  
+  if (!customerId || isNaN(Number(customerId))) {
+  return res.status(400).json({ error: "Invalid or missing customerId" });
+  }
 
   try {
     const { rows } = await q(
