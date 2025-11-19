@@ -1,13 +1,13 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-
-export default function Header() {
-  const router = useRouter();
-  const [name, setName] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  "use client";
+  
+  import { useEffect, useState } from "react";
+  import { useRouter } from "next/navigation";
+  import Link from "next/link";
+  
+  export default function Header() {
+    const router = useRouter();
+    const [name, setName] = useState<string | null>(null);
+    const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     try {
@@ -34,8 +34,8 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-3 text-sm">
           <Link href="/store" className="text-slate-600 hover:text-slate-900">Store</Link>
 
-          {user?.isAdmin && (
-            <Link href="/products" className="text-slate-600 hover:text-slate-900">Products</Link>
+          {user?.isAdmin === true && (
+          <Link href="/products" className="text-slate-600 hover:text-slate-900">Products</Link>
           )}
 
           <Link href="/orders" className="text-slate-600 hover:text-slate-900">Orders</Link>
