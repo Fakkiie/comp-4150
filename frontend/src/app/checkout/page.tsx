@@ -46,7 +46,7 @@ export default function CheckoutPage() {
     const parsedCustomer = JSON.parse(rawCustomer) as Customer;
     setCustomer(parsedCustomer);
 
-    fetch(`${API_BASE}/cart/${parsedCustomer.customerid}`)
+    fetch(`${API_BASE}/cart/${parsedCustomer.customerId}`)
       .then((res) => res.json())
       .then((data: CartItem[]) => {
         setCartItems(data);
