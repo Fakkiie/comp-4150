@@ -43,11 +43,11 @@ r.get("/customer/:customerId", async (req, res) => {
     );
 
     const orders = rows.map((row: any) => ({
-      id: row.orderid,
-      orderDate: row.orderdate,
+      orderid: row.orderid,
+      orderdate: row.orderdate,
       status: row.status,
-      totalAmount: row.totalamount,
-      shippingAddress: row.shippingaddress,
+      totalamount: row.totalamount,
+      shippingaddress: row.shippingaddress,
       items: row.items ?? [],
     }));
 
