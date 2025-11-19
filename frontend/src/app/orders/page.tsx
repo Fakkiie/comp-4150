@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 type Customer = {
-  customerid: number;
+  customerId: number;
   email: string;
   fullname?: string;
 };
@@ -42,7 +42,7 @@ export default function MyOrdersPage() {
     const parsedCustomer = JSON.parse(rawCustomer) as Customer;
     
     // Fetch orders for this customer using the route orders.ts
-    fetch(`${API_BASE}/orders/customer/${parsedCustomer.customerid}`)
+    fetch(`${API_BASE}/orders/customer/${parsedCustomer.customerId}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
