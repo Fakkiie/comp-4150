@@ -44,11 +44,12 @@ export default function Header() {
           {(user?.isAdmin || user?.isadmin) && ( 
             <Link href="/products" className="text-slate-600 hover:text-slate-900">Admin</Link>
           )}
-
+          {(user?.isAdmin || user?.isadmin) && ( 
+            <Link href="/audit" className="text-slate-600 hover:text-slate-900">Audit-Log</Link>
+          )}
           <Link href="/orders" className="text-slate-600 hover:text-slate-900">Orders</Link>
         </nav>
       </div>
-
       <div className="flex items-center gap-3">
         {name && <span className="text-sm text-slate-700 hidden sm:inline">Hi, {name}</span>}
         <button onClick={() => router.push("/profile")} className="text-sm text-slate-700 px-3 py-1 border rounded">
